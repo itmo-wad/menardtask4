@@ -2,28 +2,31 @@ from flask import render_template, flash, redirect, url_for, session, request
 from app import app
 from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
-# from werkzeug import secure_filename // Modified
-from werkzeug.utils import secure_filename # // Modified
-from flask_login import LoginManager # // Modified
+
+from werkzeug.utils import secure_filename 
+from flask_login import LoginManager 
 import os
 from sympy import isprime
 from flask import request, redirect
 import requests
 from .users import User
 
-# // Modified
+
 login = LoginManager(app)
 
-# // Modified
+
 @login.user_loader
 def load_user(id):
     return User.get(User, id)
 
 @app.route('/')
 @app.route('/index')
-@login_required
+
 def index():
-    return render_template('index.html', title='Home')
+ 
+    if current_user.is_authenticated:
+        return render_template('index.html', title='Home')
+    return redirect(url_for('login'))
 
 
 @app.route('/login',  methods=['GET', 'POST'])
@@ -57,7 +60,6 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        print(form.username.data + ' Name \n')
         r = User.insert_new_user(form.username.data, form.email.data, form.password.data)
         print(r)
         return redirect(url_for('login'))

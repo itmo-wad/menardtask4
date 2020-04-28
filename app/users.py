@@ -3,16 +3,11 @@ from werkzeug.security import check_password_hash
 from .database import mongo
 from flask import redirect, url_for, request
 from flask_login import UserMixin
-# from app import login // Modified
+
 from bson import ObjectId
 
 
 db = mongo.db
-
-# // Modified
-# @login.user_loader
-# def load_user(id):
-#     return User.get(User, id)
 
 
 class User(UserMixin):
@@ -58,7 +53,7 @@ class User(UserMixin):
     def verify_email(self, email):
         return db.users.find_one({'email': email})
 
-    def insert_new_user(self, username, email, password):
+    def insert_new_user(username, email, password):
         password_hash = generate_password_hash(password)
         return mongo.db.users.insert_one({'username': username, 'password_hash': password_hash, 'email': email})
 
